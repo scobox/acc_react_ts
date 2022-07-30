@@ -1,6 +1,5 @@
-import { Box, Button, Fade, Modal, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, Paper, TextField, Typography } from '@mui/material';
 import React, { useEffect } from 'react'
-// import { addDataIntoFirebase } from '../../db/db_utils';
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { getFinancialYear } from '../utils/getFinancialYear';
@@ -95,8 +94,5 @@ const formatDate = (date: any): string => {
 }
 
 const validateInputs = (newInvoiceData: invoiceType): boolean => {
-
-	// console.log(newInvoiceData.date._isValid, /^\d{1,9}\.?\d{0,2}$/.test(newInvoiceData.amount), newInvoiceData.description.length > 0);
-
 	return newInvoiceData.date?._isValid && /^\-?\d{1,9}\.?\d{0,2}$/.test(newInvoiceData.amount) && newInvoiceData.description.length > 0
 }

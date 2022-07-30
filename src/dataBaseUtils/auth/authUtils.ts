@@ -1,4 +1,4 @@
-import { browserSessionPersistence, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
+import { browserSessionPersistence, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 export const loginToFirebaseWithEmailAndPassword = async (email: string, password: string) => {
 	return new Promise((resolve, reject) => {
@@ -25,9 +25,12 @@ export const loginToFirebaseWithEmailAndPassword = async (email: string, passwor
 					if (user) {
 						// User is signed in
 						// ...
+						console.log(user, "signed in");
+
 					} else {
 						// User is signed out
 						// ...
+						console.log(user, "signed out");
 						sessionStorage.removeItem("user");
 					}
 				});
@@ -52,13 +55,22 @@ export async function cteateUserInFirebaseWithEmailAndPassword(email: string, pa
 		createUserWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				sessionStorage.setItem('user', userCredential.user.uid);
-				resolve(true)
+				resolve(userCredential)
 			})
 			.catch((error) => {
 				// const errorCode = error.code;
 				// const errorMessage = error.message;
 				// console.log(errorCode, errorMessage);
-				resolve(false);
+				resolve(error);
 			});
 	})
 }
+
+export const logoutFromFirebase = function () {
+	const auth = getAuth();
+	signOut(auth).then(() => {
+		// Sign-out successful.
+	}).catch((error) => {
+		// An error happened.
+	});
+} 
