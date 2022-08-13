@@ -5,7 +5,7 @@ export const loginToFirebaseWithEmailAndPassword = async (email: string, passwor
 
 
 		const auth = getAuth();
-		console.log(auth);
+		// console.log(auth);
 
 		setPersistence(auth, browserSessionPersistence)
 			.then(() => {
@@ -16,21 +16,21 @@ export const loginToFirebaseWithEmailAndPassword = async (email: string, passwor
 			})
 			.then((userCredential) => {
 				// Signed in 
-				console.log("login successful", userCredential);
+				// console.log("login successful", userCredential);
 
 				sessionStorage.setItem('user', userCredential.user.uid);
-				resolve(true);
+				resolve({ status: true });
 
 				onAuthStateChanged(auth, (user) => {
 					if (user) {
 						// User is signed in
 						// ...
-						console.log(user, "signed in");
+						// console.log(user, "signed in");
 
 					} else {
 						// User is signed out
 						// ...
-						console.log(user, "signed out");
+						// console.log(user, "signed out");
 						sessionStorage.removeItem("user");
 					}
 				});
@@ -40,9 +40,9 @@ export const loginToFirebaseWithEmailAndPassword = async (email: string, passwor
 			.catch((error) => {
 				const errorCode = error.code;
 				const errorMessage = error.message;
-				console.log(errorCode);
-				console.log(errorMessage);
-				resolve(false);
+				// console.log(errorCode);
+				// console.log(errorMessage);
+				resolve({ status: false, message: errorMessage });
 			});
 	})
 }
@@ -70,7 +70,9 @@ export const logoutFromFirebase = function () {
 	const auth = getAuth();
 	signOut(auth).then(() => {
 		// Sign-out successful.
+		// console.log("Sign-out successful.");
 	}).catch((error) => {
 		// An error happened.
+		// console.log("An error happened.");
 	});
 } 

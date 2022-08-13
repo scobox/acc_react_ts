@@ -13,6 +13,9 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useForm } from "react-hook-form";
+import { loginToFirebaseWithEmailAndPassword } from '../dataBaseUtils/auth/authUtils';
+import ModalWindow from './ModalWindow';
+import { CircularProgress } from '@mui/material';
 
 function Copyright(props: any) {
 	return (
@@ -31,22 +34,31 @@ type Inputs = {
 	email: string,
 	password: string,
 };
+type Props = {
+	setSignedIn: React.Dispatch<React.SetStateAction<boolean>>,
+	setCurrentPage: React.Dispatch<React.SetStateAction<string>>
+}
 
 const theme = createTheme();
 
-export default function LoginPage() {
+export default function LoginPage({ setSignedIn, setCurrentPage }: Props) {
 
-	const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>();
-	// const onSubmit: SubmitHandler<Inputs> = data => console.log(data);
+	const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<Inputs>();
+	const [unsuccessfulLogin, setUnsuccessfulLogin] = React.useState<{ status: boolean, message: string }>({ status: false, message: "" });
+	const [loading, setLoading] = React.useState<boolean>(false);
 
-	// const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-	// 	event.preventDefault();
-	// 	const data = new FormData(event.currentTarget);
-	// 	console.log({
-	// 		email: data.get('email'),
-	// 		password: data.get('password'),
-	// 	});
-	// };
+	const handleLoginRequest = (credentials: Inputs) => {
+		setUnsuccessfulLogin({ status: false, message: "" });
+		setLoading(true);
+		loginToFirebaseWithEmailAndPassword(credentials.email, credentials.password)
+			.then((loginResponse: any) => {
+				loginResponse.status ? setSignedIn(true) : setUnsuccessfulLogin(loginResponse);
+				reset();
+				setLoading(false);
+			})
+
+	}
+
 
 	return (
 		<ThemeProvider theme={theme}>
@@ -69,7 +81,9 @@ export default function LoginPage() {
 					<Typography component="h1" variant="h5">
 						Sign in
 					</Typography>
-					<Box component="form" onSubmit={handleSubmit(data => console.log(data))} noValidate sx={{ mt: 1 }}>
+					{!unsuccessfulLogin.status && <Typography color="red">{unsuccessfulLogin.message}</Typography>}
+
+					<Box component="form" onSubmit={handleSubmit(data => handleLoginRequest(data))} noValidate sx={{ mt: 1 }}>
 						<TextField
 							margin="normal"
 							required
@@ -94,7 +108,9 @@ export default function LoginPage() {
 							{...register('password', { required: true, pattern: /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})/ })}
 						/>
 						{errors.password && <Typography color="red">Password must be at least 8 caracters, has at least one lower case character, one uppercase character, and one digit</Typography>}
-
+						{loading && <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+							<CircularProgress />
+						</Box>}
 						<Button
 							type="submit"
 							fullWidth
@@ -104,15 +120,15 @@ export default function LoginPage() {
 							Sign In
 						</Button>
 						<Box>
-							<Box>
+							{/* <Box>
 								<Link href="#" variant="body2">
 									Forgot password?
 								</Link>
-							</Box>
+							</Box> */}
 							<Box>
-								<Link href="#" variant="body2">
+								<Button onClick={() => setCurrentPage("signup")}>
 									{"Don't have an account? Sign Up"}
-								</Link>
+								</Button>
 							</Box>
 						</Box>
 					</Box>

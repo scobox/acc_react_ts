@@ -38,9 +38,10 @@ type Inputs = {
 const theme = createTheme();
 
 type Props = {
-	setSignedIn: Dispatch<SetStateAction<boolean>>
+	setSignedIn: Dispatch<SetStateAction<boolean>>,
+	setCurrentPage: Dispatch<SetStateAction<string>>,
 }
-export default function SignUpPage({ setSignedIn }: Props) {
+export default function SignUpPage({ setSignedIn, setCurrentPage }: Props) {
 
 	const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<Inputs>();
 	const [loading, setLoading] = React.useState(false);
@@ -119,7 +120,11 @@ export default function SignUpPage({ setSignedIn }: Props) {
 						>
 							Sign Up
 						</Button>
-
+						<Box>
+							<Button onClick={() => setCurrentPage("login")}>
+								Already have an account? Log in
+							</Button>
+						</Box>
 					</Box>
 				</Box>
 				<Copyright sx={{ mt: 2, mb: 2 }} />
