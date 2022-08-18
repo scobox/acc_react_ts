@@ -4,9 +4,15 @@ import React, { useEffect, useState } from 'react'
 import { loadDataFromFirebase, updateDataInFirebase, writeIntoDataBase } from '../dataBaseUtils/readWrite'
 import ModalWindow from './ModalWindow';
 
+interface editIntfs {
+	status: boolean;
+	allocationId: number | undefined;
+}
+
 export default function Allocations() {
-	const [allocations, setAllocations] = useState([]);
+	const [allocations, setAllocations] = useState<any[]>([]);
 	const [reRender, setReRender] = useState(0);
+	const [edit, setEdit] = useState<editIntfs>({ status: false, allocationId: undefined });
 	useEffect(() => {
 		getAllocations(setAllocations);
 	}, [reRender]);
@@ -16,14 +22,57 @@ export default function Allocations() {
 		updateDataInFirebase(`allocations/${allocation.id}`);
 		setReRender(prev => prev + 1);
 	}
+	const editAllocation = (allocation: any) => {
+		// console.log(allocation);
+		setEdit({ status: true, allocationId: allocation.id });
+	}
+	const handleAllocationChange = (event: any, id: number) => {
+		console.log(event.target.value, id);
+		const newAllocations = allocations;
+		newAllocations[id - 1].name = event.target.value;
+		console.log(newAllocations);
+		setAllocations(newAllocations);
+	}
+
+	const AllocationItemEditable = ({ allocation }: any) => {
+		const [allocationName, setAllocationName] = useState(allocation.name);
+		const handleAllocationNameChange = (event: any) => {
+			setAllocationName(event.target.value)
+		}
+		const handleAllocationNameSave = () => {
+			updateDataInFirebase(`allocations/${allocation.id}/name`, allocationName)
+				.then(() => {
+					setEdit({ status: false, allocationId: undefined });
+					setReRender(prev => prev + 1);
+				})
+		}
+		return (
+			<>
+				<TextField
+					sx={{ width: "50%" }}
+					value={allocationName}
+					onChange={handleAllocationNameChange}
+				/>
+				<Button variant="contained" sx={{ mr: 2, ml: 2 }} onClick={handleAllocationNameSave}>Save</Button>
+				<Button variant="contained" onClick={() => setEdit({ status: false, allocationId: undefined })}>Cancel</Button>
+			</>
+		)
+	}
+	const AllocationItem = ({ allocation }: any) => {
+		console.log(allocation);
+
+		return (
+			<>
+				<Typography sx={{ width: "50%" }}>{allocation.name}</Typography>
+				<Button variant="contained" sx={{ mr: 2, ml: 2 }} onClick={() => editAllocation(allocation)}>Edit</Button>
+				<Button variant="contained" onClick={() => deleteAllocation(allocation)}>Delete</Button>
+			</>
+		)
+	}
 
 	return (
 		<>
 			<Paper sx={{ p: 2, m: 1 }} >
-
-				{/* <Button
-					variant="contained"
-					onClick={() => saveAllocationIntoDb({ setReRender })}>Add new allocation</Button> */}
 				<ModalWindow buttonText="Add new allocation">
 					<AddAllocationWindow handleClose={undefined as never} setReRender={setReRender} />
 				</ModalWindow>
@@ -37,12 +86,28 @@ export default function Allocations() {
 								<>
 									<ListItem
 										key={allocation.id}
-									// disableGutters
-
 									>
-										<ListItemText primary={allocation.name} />
-										<Button variant="contained" sx={{ mr: 2 }}>Edit</Button>
-										<Button variant="contained" onClick={() => deleteAllocation(allocation)}>Delete</Button>
+										{(edit.status && edit.allocationId === allocation.id) ?
+											// <TextField
+											//   value={allocation.name}
+											//   sx={{ width: "50%", pr: 2 }}
+											//   onChange={(event) => { handleAllocationChange(event, allocation.id) }}
+											// />
+											<AllocationItemEditable allocation={allocation} />
+											:
+											<AllocationItem allocation={allocation} />
+											// <ListItemText primary={allocation.name} />
+										}
+										{/* <Button variant="contained" sx={{ mr: 2 }} onClick={() => editAllocation(allocation)}> */}
+										{/* {(edit.status && edit.allocationId === allocation.id) ? "Save" : "Edit"
+                      }
+                    </Button>
+                    {
+                      (!edit.status && edit.allocationId !== allocation.id) ?
+                        
+                        :
+                        <Button variant="contained" onClick={() => setEdit({ status: false, allocationId: undefined })}>Cancel</Button>
+                    } */}
 									</ListItem>
 								</>
 							))}
@@ -157,3 +222,6 @@ const handleSaveAllocation = ({ event, allocationName, setReRender, handleClose,
 		handleClose();
 	}
 }
+
+
+

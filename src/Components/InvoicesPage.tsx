@@ -36,7 +36,7 @@ export default function InvoicesPage() {
           onChange={handleYearChange}
           label="Age"
         >
-          {yearsList.map(menuItem => <MenuItem id={menuItem} value={menuItem}>{menuItem}</MenuItem>)}
+          {yearsList.map(menuItem => <MenuItem key={menuItem} id={menuItem} value={menuItem}>{menuItem}</MenuItem>)}
         </Select>
       </FormControl >
     </Paper>
@@ -56,7 +56,8 @@ function InvoiceList({ invoicePageUpdate, currentFinancialYear }: props) {
   useEffect(() => {
     loadDataFromFirebase(`invoices/${currentFinancialYear}`)
       .then((res: any) => {
-        const invoices = Object.keys(res).map(key => res[key])
+        const invoices = Object.keys(res).map(key => res[key]);
+
         setInvoiceList(invoices)
       });
   }, [invoicePageUpdate, currentFinancialYear, reRender])
