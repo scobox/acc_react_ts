@@ -114,7 +114,7 @@ const headCells: readonly HeadCell[] = [
 	},
 	{
 		id: 'date',
-		numeric: false,
+		numeric: true,
 		disablePadding: false,
 		label: 'Date',
 	},
@@ -243,10 +243,11 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
 	);
 };
 type InvoiceTableProps = {
-	invoiceList: any[]
+	invoiceList: any[],
+	setRerender: any
 }
 
-export default function InvoiceTable({ invoiceList: rows }: InvoiceTableProps) {
+export default function InvoiceTable({ invoiceList: rows, setRerender }: InvoiceTableProps) {
 	const [order, setOrder] = useState<Order>('asc');
 	const [orderBy, setOrderBy] = useState<keyof Data>('amount');
 	const [selected, setSelected] = useState<readonly number[]>([]);
@@ -331,15 +332,16 @@ export default function InvoiceTable({ invoiceList: rows }: InvoiceTableProps) {
 		setDense(event.target.checked);
 	};
 
-	const handleAllocationChange = (event: any) => {
+	const handleAllocationChange = (event: any, index: number) => {
+		event.stopPropagation();
+		event.stopImmediatePropagation()
+		event.preventDefault();
 		const allocationId = allocations.findIndex(el => el?.name === event.target.value);
 		const invoiceId = event.target.name;
-		updateDataInFirebase(`invoices/2022-2023/${invoiceId}/allocation`, allocationId);
-		console.log(event);
-		console.log(allocations);
-		console.log(allocations.findIndex(el => el?.name === event.target.value));
-
-
+		updateDataInFirebase(`invoices/2022-2023/${invoiceId}/allocation`, allocationId)
+			.then(res => {
+				setRerender((prev: number) => prev + 1);
+			})
 	}
 
 	const isSelected = (id: number) => selected.indexOf(id) !== -1;
@@ -406,14 +408,14 @@ export default function InvoiceTable({ invoiceList: rows }: InvoiceTableProps) {
 											<TableCell align="right">{row.date}</TableCell>
 											<TableCell align="right">
 												{/* {row.allocation} */}
-												<FormControl sx={{ ml: 2, minWidth: 180 }} size="small">
+												<FormControl sx={{ ml: 2, width: 280 }} size="small">
 													<InputLabel id="demo-select-small">Allocation</InputLabel>
 													<Select
 														labelId="demo-simple-select-standard-label"
 														id="demo-simple-select-standard"
 														value={allocations[Number(row.allocation)].name}
 														name={row.id.toString()}
-														onChange={handleAllocationChange}
+														onChange={(event) => handleAllocationChange(event, index)}
 														label="Allocation"
 													>
 														{Object.keys(allocations).map(menuItem => <MenuItem id={menuItem} value={allocations[Number(menuItem)].name}>{allocations[Number(menuItem)].name}</MenuItem>)}

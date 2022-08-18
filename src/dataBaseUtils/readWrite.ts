@@ -44,6 +44,8 @@ export function updateDataInFirebase(path = "", payload?: any) {
 	return new Promise((resolve, reject) => {
 		const auth: any = getAuth();
 		const userId = auth.currentUser.uid;
-		update(ref(getDatabase()), { [`users/${userId}/${path}`]: payload || null });
+		update(ref(getDatabase()), { [`users/${userId}/${path}`]: payload || null })
+			.then(() => resolve(true))
+			.catch(() => resolve(false))
 	});
 }
