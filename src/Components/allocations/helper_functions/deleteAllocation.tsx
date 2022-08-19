@@ -7,7 +7,7 @@ type AllocationType = {
 };
 
 export default function deleteAllocation(allocation: AllocationType, setReRender: Dispatch<SetStateAction<number>>): void {
-  updateDataInFirebase(`allocations/${allocation.id}`)
+  updateDataInFirebase(`allocations/${allocation.id}`, null)
     .then(() => {
       setReRender(prev => prev + 1);
     });
