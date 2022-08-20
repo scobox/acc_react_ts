@@ -2,7 +2,7 @@ import { Button, List, ListItem, Paper, TextField, Typography } from '@mui/mater
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import { loadDataFromFirebase } from '../../dataBaseUtils/readWrite'
-import { editType } from '../../types';
+import { editType, errorType } from '../../types';
 import ModalWindow from '../ModalWindow';
 import AllocationItem from './AllocationItem';
 import AllocationItemEditable from './AllocationItemEditable';
@@ -67,7 +67,7 @@ function getAllocations(setAllocations: any) {
 
 const AddAllocationWindow = ({ handleClose, setReRender }: any) => {
   const [allocationName, setAllocationName] = useState('');
-  const [error, setError] = useState({ status: false, message: "" });
+  const [error, setError] = useState<errorType>({ status: false, message: "" });
 
   return (
     <Paper sx={{ p: 2, m: 1 }} >

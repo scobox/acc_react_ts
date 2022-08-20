@@ -7,3 +7,8 @@ export type editType = {
   status: boolean;
   allocationId: number | undefined;
 }
+
+export type errorType = {
+  status: boolean;
+  message: string;
+}
