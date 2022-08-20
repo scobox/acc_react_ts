@@ -2,13 +2,15 @@ import { Button, List, ListItem, Paper, TextField, Typography } from '@mui/mater
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import { loadDataFromFirebase, updateDataInFirebase, writeIntoDataBase } from '../../dataBaseUtils/readWrite'
+import { editType } from '../../types';
 import ModalWindow from '../ModalWindow';
+import AllocationItemEditable from './helper_functions/AllocationItemEditable';
 import deleteAllocation from './helper_functions/deleteAllocation';
 
-interface editIntfs {
-  status: boolean;
-  allocationId: number | undefined;
-}
+// interface editIntfs {
+//   status: boolean;
+//   allocationId: number | undefined;
+// }
 
 interface AllocationIntfc {
   name: string | undefined;
@@ -18,50 +20,16 @@ interface AllocationIntfc {
 export default function Allocations() {
   const [allocations, setAllocations] = useState<any[]>([]);
   const [reRender, setReRender] = useState(0);
-  const [edit, setEdit] = useState<editIntfs>({ status: false, allocationId: undefined });
+  const [edit, setEdit] = useState<editType>({ status: false, allocationId: undefined });
   useEffect(() => {
     getAllocations(setAllocations);
   }, [reRender]);
 
-  const deleteAllocation2 = (allocation: any): void => {
-    updateDataInFirebase(`allocations/${allocation.id}`)
-      .then(() => {
-        setReRender(prev => prev + 1);
-      });
-  }
-
-  const AllocationItemEditable = (props: any) => {
-    const allocation: AllocationIntfc = props.allocation;
-    const [allocationName, setAllocationName] = useState<string>(allocation?.name || "");
-    const handleAllocationNameChange = (event: any) => {
-      setAllocationName(event.target.value)
-    }
-    const handleAllocationNameSave = () => {
-      updateDataInFirebase(`allocations/${allocation.id}/name`, allocationName)
-        .then(() => {
-          setEdit({ status: false, allocationId: undefined });
-          setReRender(prev => prev + 1);
-        })
-    }
-    return (
-      <>
-        <TextField
-          sx={{ width: "50%" }}
-          value={allocationName}
-          onChange={handleAllocationNameChange}
-          autoFocus
-        />
-        <Button variant="contained" sx={{ mr: 2, ml: 2 }} onClick={handleAllocationNameSave}>Save</Button>
-        <Button variant="contained" onClick={() => setEdit({ status: false, allocationId: undefined })}>Cancel</Button>
-      </>
-    )
-  }
   const AllocationItem = ({ allocation }: any) => {
     return (
       <>
         <Typography sx={{ width: "50%" }}>{allocation.name}</Typography>
         <Button variant="contained" sx={{ mr: 2, ml: 2 }} onClick={() => setEdit({ status: true, allocationId: allocation.id })}>Edit</Button>
-        <Button variant="contained" onClick={() => deleteAllocation2(allocation)}>Delete2</Button>
         <Button variant="contained" onClick={() => deleteAllocation(allocation, setReRender)}>Delete</Button>
       </>
     )
@@ -84,7 +52,7 @@ export default function Allocations() {
                     key={allocation.name}
                   >
                     {(edit.status && edit.allocationId === allocation.id) ?
-                      <AllocationItemEditable allocation={allocation} /> :
+                      <AllocationItemEditable allocation={allocation} setEdit={setEdit} setReRender={setReRender} /> :
                       <AllocationItem allocation={allocation} />
                     }
                   </ListItem>
