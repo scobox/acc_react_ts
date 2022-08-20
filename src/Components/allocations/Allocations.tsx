@@ -1,21 +1,12 @@
 import { Button, List, ListItem, Paper, TextField, Typography } from '@mui/material'
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react'
-import { loadDataFromFirebase, updateDataInFirebase, writeIntoDataBase } from '../../dataBaseUtils/readWrite'
+import { loadDataFromFirebase } from '../../dataBaseUtils/readWrite'
 import { editType } from '../../types';
 import ModalWindow from '../ModalWindow';
-import AllocationItemEditable from './helper_functions/AllocationItemEditable';
-import deleteAllocation from './helper_functions/deleteAllocation';
-
-// interface editIntfs {
-//   status: boolean;
-//   allocationId: number | undefined;
-// }
-
-interface AllocationIntfc {
-  name: string | undefined;
-  id: number | undefined;
-}
+import AllocationItem from './AllocationItem';
+import AllocationItemEditable from './AllocationItemEditable';
+import { saveAllocationIntoDb } from './helper_functions/saveAllocationIntoDb';
 
 export default function Allocations() {
   const [allocations, setAllocations] = useState<any[]>([]);
@@ -24,16 +15,6 @@ export default function Allocations() {
   useEffect(() => {
     getAllocations(setAllocations);
   }, [reRender]);
-
-  const AllocationItem = ({ allocation }: any) => {
-    return (
-      <>
-        <Typography sx={{ width: "50%" }}>{allocation.name}</Typography>
-        <Button variant="contained" sx={{ mr: 2, ml: 2 }} onClick={() => setEdit({ status: true, allocationId: allocation.id })}>Edit</Button>
-        <Button variant="contained" onClick={() => deleteAllocation(allocation, setReRender)}>Delete</Button>
-      </>
-    )
-  }
 
   return (
     <>
@@ -53,7 +34,7 @@ export default function Allocations() {
                   >
                     {(edit.status && edit.allocationId === allocation.id) ?
                       <AllocationItemEditable allocation={allocation} setEdit={setEdit} setReRender={setReRender} /> :
-                      <AllocationItem allocation={allocation} />
+                      <AllocationItem allocation={allocation} setEdit={setEdit} setReRender={setReRender} />
                     }
                   </ListItem>
                 </>
@@ -82,48 +63,6 @@ function getAllocations(setAllocations: any) {
         setAllocations([]);
       }
     })
-}
-
-type allocationDataType = {
-  setReRender: any,
-  allocationName: any
-
-}
-
-function saveAllocationIntoDb(props: allocationDataType) {
-  loadDataFromFirebase("allocations").then((res: any) => {
-    const freeAllocationSlot = findFreeAllocationId(res);
-    writeIntoDataBase(`allocations/${freeAllocationSlot}`, { name: props.allocationName, id: freeAllocationSlot })
-      .then(() => {
-        props.setReRender((prev: number) => prev + 1);
-      })
-  });
-
-  const findFreeAllocationId = (allocations: object) => {
-    const allocationsKeys = Object.keys(allocations);
-    const idArrayLength = allocationsKeys.length;
-    if (idArrayLength === 0) {
-      writeIntoDataBase("allocations", { "zero": { id: 0, name: "unallocated" } });
-      return 1;
-    }
-    if (idArrayLength === 1) return 1;
-    if (idArrayLength >= 2) {
-      const zeroIndex = allocationsKeys.findIndex(el => el === "zero");
-
-      if (zeroIndex > -1) allocationsKeys[zeroIndex] = "0";
-
-      const allocationsKeysNumbers = allocationsKeys.map(el => Number(el));
-      allocationsKeysNumbers.sort((a: any, b: any) => a - b);
-
-      let idArrayIndex = 1;
-      do {
-        if (allocationsKeysNumbers[idArrayIndex] !== idArrayIndex) return idArrayIndex;
-        idArrayIndex++;
-      }
-      while (idArrayIndex < idArrayLength)
-      return idArrayIndex;
-    }
-  }
 }
 
 const AddAllocationWindow = ({ handleClose, setReRender }: any) => {
@@ -169,6 +108,3 @@ const handleSaveAllocation = ({ event, allocationName, setReRender, handleClose,
     handleClose();
   }
 }
-
-
-

@@ -1,12 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 import { updateDataInFirebase } from "../../../dataBaseUtils/readWrite";
+import { allocationType } from "../../../types";
 
-type AllocationType = {
-  name: string;
-  id: number
-};
-
-export default function deleteAllocation(allocation: AllocationType, setReRender: Dispatch<SetStateAction<number>>): void {
+export default function deleteAllocation(allocation: allocationType, setReRender: Dispatch<SetStateAction<number>>): void {
   updateDataInFirebase(`allocations/${allocation.id}`, null)
     .then(() => {
       setReRender(prev => prev + 1);
