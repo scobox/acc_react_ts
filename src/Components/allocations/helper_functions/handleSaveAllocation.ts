@@ -3,7 +3,7 @@ import { errorType } from "../../../types";
 import { saveAllocationIntoDb } from "./saveAllocationIntoDb";
 
 type Props = {
-  event: MouseEvent<HTMLButtonElement>,
+  event: React.FormEvent<HTMLFormElement>,
   allocationName: string,
   setReRender: Dispatch<SetStateAction<number>>;
   handleClose: any,
@@ -17,10 +17,8 @@ const handleSaveAllocation = ({ event, allocationName, setReRender, handleClose,
     setError({ status: true, message: "Allocation name can not be blank" });
     setTimeout(() => {
       setError({ status: false, message: "" });
-
     }, 2000)
   } else {
-
     saveAllocationIntoDb({ setReRender, allocationName });
     handleClose();
   }

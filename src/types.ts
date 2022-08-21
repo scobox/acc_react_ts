@@ -12,3 +12,8 @@ export type errorType = {
   status: boolean;
   message: string;
 }
+
+export type credentialsInputs = {
+  email: string,
+  password: string,
+};

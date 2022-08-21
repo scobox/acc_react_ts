@@ -1,23 +1,32 @@
-import React, { useState } from 'react';
-// import AddInvoiceElement from './Components/AddInvoiceElement';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import HomePage from './Components/HomePage';
-import LoginPage from './Components/LoginPage';
-import ModalWindow from './Components/ModalWindow';
-import SignUpPage from './Components/SignUpPage';
-import { cteateUserInFirebaseWithEmailAndPassword, loginToFirebaseWithEmailAndPassword, logoutFromFirebase } from './dataBaseUtils/auth/authUtils';
+import LoginPage from './Components/loginAndSignup/LoginPage';
+import SignUpPage from './Components/loginAndSignup/SignUpPage';
 import "./dataBaseUtils/auth/firebaseInit.ts"
-import { writeIntoDataBase } from './dataBaseUtils/readWrite';
 
 function App() {
-	const [signedIn, setSignedIn] = useState<boolean>(false);
-	const [currentPage, setCurrentPage] = useState<string>("login");
-	// loginToFirebaseWithEmailAndPassword("treex.lights@gmail.com", "123456");
-	return (
-		<div >
-			{currentPage === "login" && (!signedIn ? <LoginPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
-			{currentPage === "signup" && (!signedIn ? <SignUpPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
-		</div>
-	);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<string>("login");
+  useEffect(() => {
+    const isUser = sessionStorage.getItem('user');
+    if (isUser) {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setSignedIn(true);
+        } else {
+          sessionStorage.removeItem("user");
+        }
+      });
+    }
+  }, [])
+  return (
+    <div >
+      {currentPage === "login" && (!signedIn ? <LoginPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
+      {currentPage === "signup" && (!signedIn ? <SignUpPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
+    </div>
+  );
 }
 
 export default App;
