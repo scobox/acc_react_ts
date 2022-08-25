@@ -1,41 +1,21 @@
-import * as React from 'react';
 import { useState } from 'react';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
+import { CssBaseline, Box, Toolbar, Button, IconButton, Typography, Divider, List, Drawer as MuiDrawer } from '@mui/material';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { MainListItems, secondaryListItems } from './listItems';
-// import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
-import { Button } from '@mui/material';
+import { MainListItems } from './listItems';
 import { logoutFromFirebase } from '../dataBaseUtils/auth/authUtils';
 import InvoicesPage from './InvoicesPage';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Allocations from './allocations/Allocations';
 
-
-
 type Props = {
-  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>
-}
+  setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const drawerWidth: number = 240;
+const drawerWidth = 240;
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -59,37 +39,35 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({
+  '& .MuiDrawer-paper': {
+    position: 'relative',
+    whiteSpace: 'nowrap',
+    width: drawerWidth,
+    transition: theme.transitions.create('width', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: 'border-box',
+    ...(!open && {
+      overflowX: 'hidden',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up('sm')]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const mdTheme = createTheme();
 
 function DashboardContent({ setSignedIn }: Props) {
-  const [activePage, setActivePage] = useState("invoices");
-  const [open, setOpen] = React.useState(true);
+  const [activePage, setActivePage] = useState('invoices');
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -97,22 +75,22 @@ function DashboardContent({ setSignedIn }: Props) {
   const handleLogoutRequest = () => {
     logoutFromFirebase();
     setSignedIn(false);
-  }
+  };
 
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position='absolute' open={open}>
           <Toolbar
             sx={{
               pr: '24px', // keep right padding when drawer closed
             }}
           >
             <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
+              edge='start'
+              color='inherit'
+              aria-label='open drawer'
               onClick={toggleDrawer}
               sx={{
                 marginRight: '36px',
@@ -121,24 +99,15 @@ function DashboardContent({ setSignedIn }: Props) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
+            <Typography component='h1' variant='h6' color='inherit' noWrap sx={{ flexGrow: 1 }}>
               Dashboard
             </Typography>
-            {/* <IconButton color="inherit">
-							<Badge badgeContent={4} color="secondary">
-								<NotificationsIcon />
-							</Badge>
-						</IconButton> */}
-            <Button variant="contained" onClick={handleLogoutRequest}>Logout</Button>
+            <Button variant='contained' onClick={handleLogoutRequest}>
+              Logout
+            </Button>
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+        <Drawer variant='permanent' open={open}>
           <Toolbar
             sx={{
               display: 'flex',
@@ -152,35 +121,30 @@ function DashboardContent({ setSignedIn }: Props) {
             </IconButton>
           </Toolbar>
           <Divider />
-          <List component="nav">
+          <List component='nav'>
             <MainListItems setActivePage={setActivePage} />
             <Divider sx={{ my: 1 }} />
-            {/* {secondaryListItems} */}
           </List>
         </Drawer>
         <Box
-          component="main"
+          component='main'
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: (theme) => (theme.palette.mode === 'light' ? theme.palette.grey[100] : theme.palette.grey[900]),
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
           }}
         >
           <Toolbar />
-          {activePage === "invoices" && <InvoicesPage />}
-          {activePage === "dashboard" && <Dashboard />}
-          {activePage === "profile" && <Profile />}
-          {activePage === "allocations" && <Allocations />}
+          {activePage === 'invoices' && <InvoicesPage />}
+          {activePage === 'dashboard' && <Dashboard />}
+          {activePage === 'profile' && <Profile />}
+          {activePage === 'allocations' && <Allocations />}
         </Box>
       </Box>
     </ThemeProvider>
   );
 }
-
 
 export default function HomePage({ setSignedIn }: Props) {
   return <DashboardContent setSignedIn={setSignedIn} />;

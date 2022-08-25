@@ -3,30 +3,32 @@ import { useEffect, useState } from 'react';
 import HomePage from './Components/HomePage';
 import LoginPage from './Components/loginAndSignup/LoginPage';
 import SignUpPage from './Components/loginAndSignup/SignUpPage';
-import "./dataBaseUtils/auth/firebaseInit.ts"
+import './dataBaseUtils/auth/firebaseInit.ts';
+import { RoutePath } from './types';
 
 function App() {
-  const [signedIn, setSignedIn] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<string>("login");
+  const [signedIn, setSignedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState<RoutePath>(RoutePath.Login);
+  const unauthorizedComponentsMap = {
+    [RoutePath.Login]: LoginPage,
+    [RoutePath.SignUp]: SignUpPage,
+  };
   useEffect(() => {
-    const isUser = sessionStorage.getItem('user');
+    const isUser = Boolean(sessionStorage.getItem('user'));
     if (isUser) {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
         if (user) {
           setSignedIn(true);
         } else {
-          sessionStorage.removeItem("user");
+          sessionStorage.removeItem('user');
         }
       });
     }
-  }, [])
-  return (
-    <div >
-      {currentPage === "login" && (!signedIn ? <LoginPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
-      {currentPage === "signup" && (!signedIn ? <SignUpPage setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} /> : <HomePage setSignedIn={setSignedIn} />)}
-    </div>
-  );
+  }, []);
+  const UnauthorizedComponent = unauthorizedComponentsMap[currentPage];
+  if (!signedIn) return <UnauthorizedComponent setSignedIn={setSignedIn} setCurrentPage={setCurrentPage} />;
+  return <HomePage setSignedIn={setSignedIn} />;
 }
 
 export default App;

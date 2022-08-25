@@ -1,27 +1,17 @@
-import { Dispatch, MouseEvent, SetStateAction } from "react";
-import { errorType } from "../../../types";
-import { saveAllocationIntoDb } from "./saveAllocationIntoDb";
+import { handleSaveAllocationProps } from '../../../types';
+import { saveAllocationIntoDb } from './saveAllocationIntoDb';
 
-type Props = {
-  event: React.FormEvent<HTMLFormElement>,
-  allocationName: string,
-  setReRender: Dispatch<SetStateAction<number>>;
-  handleClose: any,
-  setError: Dispatch<SetStateAction<errorType>>;
-}
-
-const handleSaveAllocation = ({ event, allocationName, setReRender, handleClose, setError }: Props) => {
+const handleSaveAllocation = async ({ event, allocationName }: handleSaveAllocationProps) => {
   event.preventDefault();
-  // console.log(allocationName);
-  if (allocationName === "") {
-    setError({ status: true, message: "Allocation name can not be blank" });
-    setTimeout(() => {
-      setError({ status: false, message: "" });
-    }, 2000)
-  } else {
-    saveAllocationIntoDb({ setReRender, allocationName });
-    handleClose();
-  }
-}
+  return new Promise((resolve, reject) => {
+    if (allocationName === '') {
+      resolve(false);
+    } else {
+      saveAllocationIntoDb(allocationName).then(() => {
+        resolve(true);
+      });
+    }
+  });
+};
 
 export default handleSaveAllocation;
