@@ -35,3 +35,10 @@ export enum RoutePath {
   Login = 'login',
   SignUp = 'signup',
 }
+
+export enum HomePageRoutePath {
+  Invoices = 'invoices',
+  Dashboard = 'dashboard',
+  Profile = 'profile',
+  Allocations = 'allocations',
+}

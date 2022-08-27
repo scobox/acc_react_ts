@@ -12,7 +12,7 @@ export default function Allocations() {
   const [reRender, setReRender] = useState(0);
   const [edit, setEdit] = useState<EditType>({ status: false, allocationId: undefined });
   useEffect(() => {
-    getAllocations(setAllocations);
+    getAllocations().then((res: any) => setAllocations(res));
   }, [reRender]);
 
   return (

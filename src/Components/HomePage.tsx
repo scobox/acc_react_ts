@@ -10,6 +10,7 @@ import InvoicesPage from './InvoicesPage';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
 import Allocations from './allocations/Allocations';
+import { HomePageRoutePath } from '../types';
 
 type Props = {
   setSignedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -66,8 +67,15 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 function DashboardContent({ setSignedIn }: Props) {
-  const [activePage, setActivePage] = useState('invoices');
+  const [activePage, setActivePage] = useState(HomePageRoutePath.Invoices);
   const [open, setOpen] = useState(true);
+  const HomePageRouteComponentMap = {
+    [HomePageRoutePath.Invoices]: InvoicesPage,
+    [HomePageRoutePath.Dashboard]: Dashboard,
+    [HomePageRoutePath.Profile]: Profile,
+    [HomePageRoutePath.Allocations]: Allocations,
+  };
+  const HomePageRouteComponent = HomePageRouteComponentMap[activePage];
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -136,10 +144,7 @@ function DashboardContent({ setSignedIn }: Props) {
           }}
         >
           <Toolbar />
-          {activePage === 'invoices' && <InvoicesPage />}
-          {activePage === 'dashboard' && <Dashboard />}
-          {activePage === 'profile' && <Profile />}
-          {activePage === 'allocations' && <Allocations />}
+          {<HomePageRouteComponent />}
         </Box>
       </Box>
     </ThemeProvider>
