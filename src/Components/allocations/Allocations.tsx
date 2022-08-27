@@ -1,11 +1,11 @@
-import { List, ListItem, Paper, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { AllocationType, EditType } from '../../types';
-import ModalWindow from '../ModalWindow';
-import AddAllocationWindow from './AddAllocationWindow';
-import AllocationItem from './AllocationItem';
-import AllocationItemEditable from './AllocationItemEditable';
-import getAllocations from './helper_functions/getAllocations';
+import { List, ListItem, Paper, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { AllocationType, EditType } from "../../types";
+import ModalWindow from "../ModalWindow";
+import AddAllocationWindow from "./AddAllocationWindow";
+import AllocationItem from "./AllocationItem";
+import AllocationItemEditable from "./AllocationItemEditable";
+import getAllocations from "./helper_functions/getAllocations";
 
 export default function Allocations() {
   const [allocations, setAllocations] = useState<AllocationType[]>([]);
@@ -19,20 +19,28 @@ export default function Allocations() {
     <>
       <Paper sx={{ p: 2, m: 1 }}>
         <ModalWindow buttonText='Add new allocation'>
-          <AddAllocationWindow handleClose={undefined as never} setReRender={setReRender} />
+          <AddAllocationWindow handleClose setReRender={setReRender} />
         </ModalWindow>
       </Paper>
       <Paper sx={{ p: 2, m: 1 }}>
         {allocations.length ? (
-          <List sx={{ width: '100%', maxWidth: 660, bgcolor: 'background.paper' }}>
+          <List sx={{ width: "100%", maxWidth: 660, bgcolor: "background.paper" }}>
             {allocations.map(
-              (allocation: AllocationType) =>
+              (allocation) =>
                 allocation.id !== 0 && (
                   <ListItem key={allocation.name}>
                     {edit.status && edit.allocationId === allocation.id ? (
-                      <AllocationItemEditable allocation={allocation} setEdit={setEdit} setReRender={setReRender} />
+                      <AllocationItemEditable
+                        allocation={allocation}
+                        setEdit={setEdit}
+                        setReRender={setReRender}
+                      />
                     ) : (
-                      <AllocationItem allocation={allocation} setEdit={setEdit} setReRender={setReRender} />
+                      <AllocationItem
+                        allocation={allocation}
+                        setEdit={setEdit}
+                        setReRender={setReRender}
+                      />
                     )}
                   </ListItem>
                 )

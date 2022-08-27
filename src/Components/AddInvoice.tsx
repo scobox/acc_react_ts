@@ -1,12 +1,12 @@
-import { Button, Paper, TextareaAutosize, TextField, Typography } from '@mui/material';
-import { Box } from '@mui/system';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { updateDataInFirebase } from '../dataBaseUtils/readWrite';
-import { getFinancialYear } from '../utils/getFinancialYear';
+import { Button, Paper, TextareaAutosize, TextField, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { MobileDatePicker } from "@mui/x-date-pickers/MobileDatePicker";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import { updateDataInFirebase } from "../dataBaseUtils/readWrite";
+import { getFinancialYear } from "../utils/getFinancialYear";
 
 type props = {
   handleClose: any;
@@ -20,12 +20,12 @@ export function AddInvoice({ handleClose, setInvoicePageUpdate }: props) {
     description: string;
   };
 
-  type inputValidationMessagesType = {
+  type InputValidationMessagesType = {
     amount: boolean;
     description: boolean;
   };
   const [date, setDate] = React.useState<Date | null>(new Date());
-  const [inputValid, setInputValid] = React.useState<inputValidationMessagesType>({
+  const [inputValid, setInputValid] = React.useState<InputValidationMessagesType>({
     amount: false,
     description: false,
   });
@@ -55,8 +55,8 @@ export function AddInvoice({ handleClose, setInvoicePageUpdate }: props) {
     formState: { errors },
     reset,
   } = useForm<Inputs>();
-  const watchAmount = watch('amount', '');
-  const watchDescription = watch('description', '');
+  const watchAmount = watch("amount", "");
+  const watchDescription = watch("description", "");
   React.useEffect(() => {
     setInputValid({ amount: false, description: false });
   }, [watchAmount, watchDescription]);
@@ -72,19 +72,21 @@ export function AddInvoice({ handleClose, setInvoicePageUpdate }: props) {
             inputFormat='DD/MM/YYYY'
             onChange={handleDateChange}
             value={date}
-            renderInput={(params) => <TextField {...params} {...register('date')} />}
+            renderInput={(params) => <TextField {...params} {...register("date")} />}
           />
         </LocalizationProvider>
       </Box>
       <Box>
-        <TextField margin='normal' required label='Amount' {...register('amount')} />
+        <TextField margin='normal' required label='Amount' {...register("amount")} />
         {/* { pattern: /^[0-9]*(\.[0-9]{2})?$/ } */}
       </Box>
       {inputValid.amount && <Typography color='red'>enter correct amount</Typography>}
       <Box sx={{ mt: 2, mb: 2 }}>
         <Typography> Invoice description</Typography>
-        {inputValid.description && <Typography color='red'>Description can not be blank</Typography>}
-        <TextareaAutosize style={{ width: 280, height: 40 }} {...register('description')} />
+        {inputValid.description && (
+          <Typography color='red'>Description can not be blank</Typography>
+        )}
+        <TextareaAutosize style={{ width: 280, height: 40 }} {...register("description")} />
       </Box>
       <Button variant='contained' sx={{ mr: 2 }} onClick={handleSubmit(handleInvoiceSaveRequest)}>
         Add invoice
