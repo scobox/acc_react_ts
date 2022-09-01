@@ -1,0 +1,9 @@
+{
+  "trailingComma": "es5",
+  "singleQuote": false,
+  "jsxSingleQuote": true,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "requirePragma": false,
+  "printWidth": 100
+}
